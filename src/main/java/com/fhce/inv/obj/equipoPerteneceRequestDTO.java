@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class equipoCpuRequestDTO {
+public class equipoPerteneceRequestDTO {
     private equipoRequestDTO equipoRequestDTO;
-    private componentePcRequestDTO componentePcRequestDTO;
     private perteneceRequestDTO perteneceRequestDTO;
 }

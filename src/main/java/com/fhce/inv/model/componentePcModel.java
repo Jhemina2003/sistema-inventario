@@ -44,7 +44,7 @@ public class componentePcModel {
     @Column(name = "_06disco", nullable = false)
     private String disco;
     
-    @Column(name = "_07cortapico", nullable = false)
+    @Column(name = "_07cortapico")
     private String cortapico;
     
     @Column(name = "_08detalle", nullable = false)
@@ -60,7 +60,7 @@ public class componentePcModel {
     private String versionamiento;
     
     @ManyToOne
-    @JoinColumn(name = "_12idequipo", nullable = false)
+    @JoinColumn(name = "_12idequipo", unique = true, nullable = false)
     private equipoModel equipo;
     
 }

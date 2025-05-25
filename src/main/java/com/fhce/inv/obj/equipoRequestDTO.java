@@ -11,7 +11,10 @@ public class equipoRequestDTO {
 	private String codigo;
     private String macSerie;
     private String marca;
+    
+    ///@JsonIgnore
     private Long idTipo;
+    
     private String modelo;
     private String detalle;
 }

@@ -10,4 +10,8 @@ import com.fhce.inv.model.equipoModel;
 @Repository
 public interface equipoDao extends JpaRepository<equipoModel, Long> {
     List<equipoModel> findByTipoIdTipo(Long idTipo);
+    
+    boolean existsByCodigo(String codigo);
+    
+    equipoModel findByCodigo(String codigo);
 }

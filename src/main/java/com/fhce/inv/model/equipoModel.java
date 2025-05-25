@@ -30,7 +30,7 @@ public class equipoModel {
 	@Column(name = "id", unique = true, nullable = false)
 	private Long idequipo;
 	
-	@Column(name = "_01codigo", nullable = false)
+	@Column(name = "_01codigo", unique = true, nullable = false)
 	private String codigo;
 	
 	@Column(name = "_02macSerie", nullable = false)
@@ -46,7 +46,7 @@ public class equipoModel {
 	@Column(name = "_05modelo", nullable = false)
 	private String modelo;
 	
-	@Column(name = "_06detalle", nullable = false)
+	@Column(name = "_06detalle", nullable = false, length = 5000)
 	private String detalle;
 	
 	@OneToMany(mappedBy = "equipo")

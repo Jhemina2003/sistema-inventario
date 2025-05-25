@@ -51,6 +51,22 @@ public class perteneceController {
         }
     }
     
+    @PutMapping("/updatePerteneceIdEquipo/{idEquipo}")
+    public ResponseEntity<?> updatePerteneceByEquipo(
+            @PathVariable Long idEquipo,
+            @RequestBody perteneceRequestDTO perteneceRequestDTO) {
+        try {
+            perteneceResponseDTO response = perteneceService.updatePerteneceIdEquipo(idEquipo, perteneceRequestDTO);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("mensaje", "Error al actualizar asignación por equipo");
+            errorResponse.put("error", e.getMessage());
+            
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
     @GetMapping("/getPertenece/{id}")
     public ResponseEntity<perteneceResponseDTO> getPertenece(@PathVariable Long id) {
         try {
@@ -85,6 +101,20 @@ public class perteneceController {
     public ResponseEntity<?> getPropietarioActual(@PathVariable Long idEquipo) {
         try {
             perteneceResponseDTO response = perteneceService.getPropietarioActual(idEquipo);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("mensaje", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+    }
+    
+    @GetMapping("/getPertenecePorEquipoYCif/{idEquipo}/{cif}")
+    public ResponseEntity<?> getPertenecePorEquipoYCif(
+            @PathVariable Long idEquipo,
+            @PathVariable Long cif) {
+        try {
+            List<perteneceResponseDTO> response = perteneceService.getPertenecePorEquipoYCif(idEquipo, cif);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();

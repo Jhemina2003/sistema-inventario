@@ -31,25 +31,25 @@ public class atencionModel {
     @JoinColumn(name = "_01idequipo", nullable = false)
     private equipoModel equipo;
 	
-	@Column(name = "_02fechasolicitud", nullable = false)
+	@Column(name = "_02fechasolicitud")
 	private LocalDate fechaSolicitud;
 	
-	@Column(name = "_03horasolicitud", nullable = false)
+	@Column(name = "_03horasolicitud")
 	private String horaSolicitud;
 	
-	@Column(name = "_04especificacion", nullable = false)
+	@Column(name = "_04especificacion")
 	private String especificacion;
 	
-	@Column(name = "_05error", nullable = false)
+	@Column(name = "_05error")
 	private String error;
 	
-	@Column(name = "_06solucion", nullable = false)
+	@Column(name = "_06solucion")
 	private String solucion;
 	
-	@Column(name = "_07fechaatencion", nullable = false)
+	@Column(name = "_07fechaatencion")
 	private LocalDate fechaAtencion;
 	
-	@Column(name = "_08horaatencion", nullable = false)
+	@Column(name = "_08horaatencion")
 	private String horaAtencion;
 	
 	@Column(name = "_09estado", nullable = false)

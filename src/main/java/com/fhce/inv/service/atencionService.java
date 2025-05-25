@@ -9,4 +9,6 @@ public interface atencionService {
     atencionResponseDTO addAtencion(atencionRequestDTO atencionRequestDTO);
     atencionResponseDTO updateAtencion(Long id, atencionRequestDTO atencionRequestDTO);
     List<atencionDtoObjResponce> getListaEsperaAtencion();
+    
+    List<atencionDtoObjResponce> getAtencionesPorEquipoYCif(Long idEquipo, Long cif);
 }

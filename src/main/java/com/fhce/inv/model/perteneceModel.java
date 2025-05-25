@@ -34,7 +34,7 @@ public class perteneceModel {
 	private Long cif;
 	
 	@ManyToOne
-    @JoinColumn(name = "_02idequipo", nullable = false)
+    @JoinColumn(name = "_02idequipo", unique = true, nullable = false)
     private equipoModel equipo;
 	
 	@Column(name = "_03fechaadd", nullable = false)
@@ -43,7 +43,7 @@ public class perteneceModel {
 	@Column(name = "_04fechadel", nullable = false)
 	private LocalDate fechaDel;
 	
-	@Column(name = "_05estado", nullable = false)
+	@Column(name = "_05estado")
 	private String estado;
 	
 	@OneToMany(mappedBy = "pertenece")

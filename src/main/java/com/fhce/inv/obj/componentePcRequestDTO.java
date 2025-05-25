@@ -2,6 +2,8 @@ package com.fhce.inv.obj;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +24,9 @@ public class componentePcRequestDTO {
     private String teclado;
     private String mouse;
     private String versionamiento;
+    
+    @JsonIgnore
     private Long idEquipo;
+    
     private LocalDate fecha;
 }

@@ -121,9 +121,8 @@ public class ubicacionServiceImp implements ubicacionService {
     @Transactional
     public ubicacionResponseDTO cambiarEstadoUbicacion(Long id, int estado) {
         if (estado != 1 && estado != 0) {
-            throw new RuntimeException("Estado no válido. Use 1 para activo, 0 para inactivo");
+        	throw new RuntimeException("Estado no válido. Use 1 para activo, 0 para inactivo");
         }
-        
         ubicacionModel ubicacion = ubicacionDao.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ubicación no encontrada"));
         ubicacion.setEstado(estado);

@@ -254,4 +254,22 @@ public class atencionServiceImp implements atencionService {
         
         return response;
     }
+    
+    @Override
+    @Transactional
+    public List<atencionDtoObjResponce> getAtencionesPorEquipoYCif(Long idEquipo, Long cif) {
+        // equipo existe
+        if (!equipoDao.existsById(idEquipo)) {
+            throw new RuntimeException("Equipo no encontrado");
+        }
+        List<atencionModel> atenciones = atencionDao.findByEquipoIdequipoAndPerteneceCif(idEquipo, cif);
+        
+        if (atenciones.isEmpty()) {
+            throw new RuntimeException("No se encontraron atenciones para el equipo y CIF especificados");
+        }
+        
+        return atenciones.stream()
+                .map(this::convertToObjResponse)
+                .collect(Collectors.toList());
+    }
 }

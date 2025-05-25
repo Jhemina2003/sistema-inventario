@@ -29,6 +29,11 @@ public class redServiceImp implements redService {
     @Override
     @Transactional
     public redResponseDTO addRed(redRequestDTO redRequestDTO) {
+        // Verificar que idEquipo no sea nulo
+        if (redRequestDTO.getIdEquipo() == null) {
+            throw new RuntimeException("El ID del equipo es requerido");
+        }
+        
         equipoModel equipo = equipoDao.findById(redRequestDTO.getIdEquipo())
                 .orElseThrow(() -> new RuntimeException("Equipo no encontrado"));
 
@@ -36,16 +41,41 @@ public class redServiceImp implements redService {
             throw new RuntimeException("Ya existe una configuración con este puerto");
         }
 
-        redModel red = modelMapper.map(redRequestDTO, redModel.class);
+        // Crear el objeto redModel manualmente en lugar de usar ModelMapper
+        redModel red = new redModel();
         red.setEquipo(equipo);
-        if (red.getFecharegistro() == null) {
+        red.setIp(redRequestDTO.getIp());
+        red.setSegmento(redRequestDTO.getSegmento());
+        red.setDns(redRequestDTO.getDns());
+        red.setVlan(redRequestDTO.getVlan());
+        red.setSwitchRed(redRequestDTO.getSwitchRed());
+        red.setPuerto(redRequestDTO.getPuerto());
+        
+        // Configurar fecha de registro
+        if (redRequestDTO.getFechaRegistro() != null) {
+            red.setFecharegistro(redRequestDTO.getFechaRegistro());
+        } else {
             red.setFecharegistro(LocalDate.now());
         }
-        red.setEstado(1);
+        
+        // Configurar estado
+        red.setEstado(redRequestDTO.getEstado() != 0 ? redRequestDTO.getEstado() : 1);
+        
         redModel savedRed = redDao.save(red);
-        redResponseDTO response = modelMapper.map(savedRed, redResponseDTO.class);
+        
+        // Crear la respuesta manualmente también
+        redResponseDTO response = new redResponseDTO();
+        response.setIdRed(savedRed.getIdRed());
+        response.setIp(savedRed.getIp());
+        response.setSegmento(savedRed.getSegmento());
+        response.setDns(savedRed.getDns());
+        response.setVlan(savedRed.getVlan());
+        response.setSwitchRed(savedRed.getSwitchRed());
+        response.setPuerto(savedRed.getPuerto());
         response.setIdEquipo(equipo.getIdequipo());
         response.setCodigoEquipo(equipo.getCodigo());
+        response.setFechaRegistro(savedRed.getFecharegistro());
+        response.setEstado(savedRed.getEstado());
         
         return response;
     }

@@ -7,8 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class equipoCpuRequestDTO {
+public class equipoCompletoRequestDTO {
     private equipoRequestDTO equipoRequestDTO;
     private componentePcRequestDTO componentePcRequestDTO;
     private perteneceRequestDTO perteneceRequestDTO;
+    private redRequestDTO redRequestDTO;
+    private ubicacionRequestDTO ubicacionRequestDTO;
+    private softwareRequestDTO softwareRequestDTO;
 }
