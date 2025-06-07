@@ -39,7 +39,7 @@ public class equipoModel {
 	@Column(name = "_03marca", nullable = false)
 	private String marca;
 	
-	@ManyToOne
+	@ManyToOne//(fetch = FetchType.EAGER)
 	@JoinColumn(name = "_04idTipo", nullable = false)
 	private tipoModel tipo;
 	

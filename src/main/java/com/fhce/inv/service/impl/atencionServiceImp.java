@@ -148,7 +148,7 @@ public class atencionServiceImp implements atencionService {
     @Override
     @Transactional
     public List<atencionDtoObjResponce> getListaEsperaAtencion() {
-        //Obtener todas las atenciones en estado de espera (estado = 0)
+        //Obtener todas las atenciones en estado de espera -->estado = 0
         List<atencionModel> atenciones = atencionDao.findByEstado(0);
         
         return atenciones.stream()
@@ -156,36 +156,17 @@ public class atencionServiceImp implements atencionService {
                 .collect(Collectors.toList());
     }
     
-    /*private atencionDtoObjResponce convertToObjResponse(atencionModel atencion) {
-        atencionDtoObjResponce response = new atencionDtoObjResponce();
+    @Override
+    @Transactional
+    public List<atencionDtoObjResponce> getListaAtendidas() {
+        // Obtener todas las atenciones que ya fueron atendidas --> estado = 1
+        List<atencionModel> atenciones = atencionDao.findByEstado(1);
         
-        modelMapper.map(atencion, response);
-        
-        response.setIdAtencion(atencion.getIdAtencion());
-        response.setCif(atencion.getPertenece().getCif());
-        response.setCodigo(atencion.getEquipo().getCodigo());
-        
-        if (atencion.getHoraSolicitud() != null) {
-            response.setHoraSolicitud(atencion.getHoraSolicitud().toString());
-        }
-        
-        response.setEquipo(atencion.getEquipo().getMarca() + " " + atencion.getEquipo().getModelo());
-        response.setIdTipo(atencion.getEquipo().getTipo().getIdTipo());
-        response.setDetalle(atencion.getEquipo().getDetalle());
-        
-        if (atencion.getHoraAtencion() != null) {
-            response.setHoraAtencion(atencion.getHoraAtencion().toString());
-        }
-        
-
-        List<String> resumen = new ArrayList<>();
-        resumen.add("Equipo: " + atencion.getEquipo().getMarca() + " " + atencion.getEquipo().getModelo());
-        resumen.add("Tipo: " + atencion.getEquipo().getTipo().getNombre());
-        resumen.add("Error: " + (atencion.getError() != null ? atencion.getError() : "No especificado"));
-        response.setResumen(resumen);
-        
-        return response;
-    }*/
+        return atenciones.stream()
+                .map(this::convertToObjResponse)
+                .collect(Collectors.toList());
+    }
+    
     private atencionDtoObjResponce convertToObjResponse(atencionModel atencion) {
         atencionDtoObjResponce response = new atencionDtoObjResponce();
         
@@ -271,5 +252,115 @@ public class atencionServiceImp implements atencionService {
         return atenciones.stream()
                 .map(this::convertToObjResponse)
                 .collect(Collectors.toList());
+    }
+    
+    @Override
+    @Transactional
+    public List<atencionDtoObjResponce> getHistorialAtencionesPorEquipo(Long idEquipo) {
+        equipoModel equipo = equipoDao.findById(idEquipo)
+                .orElseThrow(() -> new RuntimeException("Equipo no encontrado"));
+        
+        //Obtener todas las atenciones del equipo (atendidas y en espera) ordenadas por fecha
+        List<atencionModel> atenciones = atencionDao.findByEquipoOrderByFechaSolicitudDesc(equipo);
+        
+        return atenciones.stream()
+                .map(this::convertToObjResponseHistorial)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<atencionDtoObjResponce> getHistorialAtencionesPorCif(Long cif) {
+        List<atencionModel> atenciones = atencionDao.findByPerteneceCifOrderByFechaSolicitudDesc(cif);
+        
+        return atenciones.stream()
+                .map(this::convertToObjResponseHistorial)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<atencionDtoObjResponce> getHistorialCompleto() {
+        // Obtener todas las atenciones del sistema ordenadas por fecha
+        List<atencionModel> atenciones = atencionDao.findAllByOrderByFechaSolicitudDesc();
+        
+        return atenciones.stream()
+                .map(this::convertToObjResponseHistorial)
+                .collect(Collectors.toList());
+    }
+    
+ // Metodo mejorado para incluir información histórica
+    private atencionDtoObjResponce convertToObjResponseHistorial(atencionModel atencion) {
+        atencionDtoObjResponce response = new atencionDtoObjResponce();
+        
+        // Información básica
+        response.setIdAtencion(atencion.getIdAtencion());
+        response.setCif(atencion.getPertenece().getCif());
+        response.setCodigo(atencion.getEquipo().getCodigo());
+        response.setFechaSolicitud(atencion.getFechaSolicitud());
+        response.setHoraSolicitud(atencion.getHoraSolicitud());
+        response.setEquipo(atencion.getEquipo().getMarca() + " " + atencion.getEquipo().getModelo());
+        response.setIdTipo(atencion.getEquipo().getTipo().getIdTipo());
+        response.setEspecificacion(atencion.getEspecificacion());
+        response.setError(atencion.getError());
+        response.setDetalle(atencion.getEquipo().getDetalle());
+        response.setFechaAtencion(atencion.getFechaAtencion());
+        response.setHoraAtencion(atencion.getHoraAtencion());
+        response.setEstado(atencion.getEstado());
+        
+        // Crear resumen más detallado para el historial
+        List<String> resumen = new ArrayList<>();
+        equipoModel equipo = atencion.getEquipo();
+        tipoModel tipo = equipo.getTipo();
+        
+        resumen.add("=== INFORMACIÓN DE LA ATENCIÓN ===");
+        resumen.add("ID Atención: " + atencion.getIdAtencion());
+        resumen.add("Estado: " + (atencion.getEstado() == 1 ? "Atendida" : "En espera"));
+        resumen.add("Fecha solicitud: " + atencion.getFechaSolicitud());
+        
+        if (atencion.getFechaAtencion() != null) {
+            resumen.add("Fecha atención: " + atencion.getFechaAtencion());
+        }
+        
+        resumen.add("=== EQUIPO EN ESE MOMENTO ===");
+        resumen.add("ID Equipo: " + equipo.getIdequipo());
+        resumen.add("Código: " + equipo.getCodigo());
+        resumen.add("Tipo: " + tipo.getNombre() + " (" + tipo.getSigla() + ")");
+        resumen.add("Marca: " + equipo.getMarca());
+        resumen.add("Modelo: " + equipo.getModelo());
+        resumen.add("Serie/MAC: " + equipo.getMacSerie());
+        
+        resumen.add("=== ASIGNACIÓN EN ESE MOMENTO ===");
+        resumen.add("CIF responsable: " + atencion.getPertenece().getCif());
+        resumen.add("Fecha asignación: " + atencion.getPertenece().getFechaAdd());
+        resumen.add("Estado asignación: " + atencion.getPertenece().getEstado());
+        
+        // Información del problema
+        resumen.add("=== PROBLEMA REPORTADO ===");
+        resumen.add("Error: " + (atencion.getError() != null ? atencion.getError() : "No especificado"));
+        resumen.add("Especificación: " + (atencion.getEspecificacion() != null ? atencion.getEspecificacion() : "No especificado"));
+        
+        if (atencion.getSolucion() != null && !atencion.getSolucion().isEmpty()) {
+            resumen.add("Solución aplicada: " + atencion.getSolucion());
+        }
+        
+        // Información de componentes si es CPU
+        if (tipo.getSigla().equals("CPU")) {
+            List<componentePcModel> componentes = componentePcDao.findByEquipoIdequipo(equipo.getIdequipo());
+            
+            if (!componentes.isEmpty()) {
+                componentePcModel componente = componentes.get(0);
+                
+                resumen.add("=== COMPONENTES DEL EQUIPO ===");
+                resumen.add("Procesador: " + componente.getMicro());
+                resumen.add("RAM: " + componente.getCapacidad());
+                resumen.add("Disco: " + componente.getDisco());
+                resumen.add("Detalles técnicos: " + componente.getDetalle());
+            }
+        }
+        
+        response.setResumen(resumen);
+        
+        return response;
     }
 }

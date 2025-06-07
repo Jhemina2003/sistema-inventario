@@ -12,7 +12,8 @@ public interface perteneceService {
     perteneceResponseDTO getPertenece(Long id);
     List<perteneceResponseDTO> getPerteneceByCif(Long cif);
     List<perteneceResponseDTO> getPertenecePorEquipo(Long idEquipo);
-    perteneceResponseDTO getPropietarioActual(Long idEquipo);
     
     List<perteneceResponseDTO> getPertenecePorEquipoYCif(Long idEquipo, Long cif);
+    
+    List<perteneceResponseDTO> getEquiposPorTipo(Long idTipo);
 }

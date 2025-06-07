@@ -11,4 +11,10 @@ public interface atencionService {
     List<atencionDtoObjResponce> getListaEsperaAtencion();
     
     List<atencionDtoObjResponce> getAtencionesPorEquipoYCif(Long idEquipo, Long cif);
+    
+    List<atencionDtoObjResponce> getListaAtendidas();
+    
+    List<atencionDtoObjResponce> getHistorialAtencionesPorEquipo(Long idEquipo);
+    List<atencionDtoObjResponce> getHistorialAtencionesPorCif(Long cif);
+    List<atencionDtoObjResponce> getHistorialCompleto(); //Todas las atenciones ordenadas por fecha
 }

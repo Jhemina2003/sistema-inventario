@@ -38,4 +38,6 @@ public interface equipoService {
     List<equipoResponseDTO> getEquipoTipo(Long idTipo);
 	    
     equipoResponseDTO updateEquipo(Long idEquipo, equipoRequestDTO equipoRequestDTO);
+    
+    List<equipoResponseDTO> getAllEquipos();
 }

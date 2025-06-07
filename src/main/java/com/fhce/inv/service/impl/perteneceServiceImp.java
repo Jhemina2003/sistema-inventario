@@ -1,13 +1,15 @@
 package com.fhce.inv.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
+//import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.fhce.inv.dao.equipoDao;
 import com.fhce.inv.dao.perteneceDao;
+import com.fhce.inv.dao.tipoDao;
 import com.fhce.inv.model.equipoModel;
 import com.fhce.inv.model.perteneceModel;
 import com.fhce.inv.obj.perteneceRequestDTO;
@@ -23,7 +25,44 @@ public class perteneceServiceImp implements perteneceService {
 
     private final perteneceDao perteneceDao;
     private final equipoDao equipoDao;
-    private final ModelMapper modelMapper;
+    //private final ModelMapper modelMapper;
+    private final tipoDao tipoDao;
+    
+    private perteneceResponseDTO createPerteneceResponseDTO(perteneceModel pertenece) {
+        perteneceResponseDTO dto = new perteneceResponseDTO();
+        dto.setIdPertenece(pertenece.getIdPertenece());
+        dto.setCif(pertenece.getCif());
+        
+        // Verificar que el equipo no sea null
+        if (pertenece.getEquipo() != null) {
+            dto.setIdEquipo(pertenece.getEquipo().getIdequipo());
+            dto.setCodigoEquipo(pertenece.getEquipo().getCodigo());
+            dto.setEquipoDetalle(pertenece.getEquipo().getDetalle());
+            dto.setEquipoMarca(pertenece.getEquipo().getMarca());
+            dto.setEquipoModelo(pertenece.getEquipo().getModelo());
+            
+            // Verificar que el tipo no sea null
+            if (pertenece.getEquipo().getTipo() != null) {
+                dto.setIdTipo(pertenece.getEquipo().getTipo().getIdTipo());
+                dto.setTipoNombre(pertenece.getEquipo().getTipo().getNombre());
+                dto.setTipoSigla(pertenece.getEquipo().getTipo().getSigla());
+            } else {
+                // Valores por defecto si tipo es null
+                dto.setIdTipo(null);
+                dto.setTipoNombre("Sin tipo");
+                dto.setTipoSigla("N/A");
+                System.out.println("ADVERTENCIA: Equipo sin tipo asignado - ID: " + pertenece.getEquipo().getIdequipo());
+            }
+        } else {
+            System.out.println("ERROR: Pertenencia sin equipo - ID: " + pertenece.getIdPertenece());
+        }
+        
+        dto.setFechaAdd(pertenece.getFechaAdd());
+        dto.setFechaDel(pertenece.getFechaDel());
+        dto.setEstado(pertenece.getEstado());
+        
+        return dto;
+    }
     
     @Override
     @Transactional
@@ -55,7 +94,7 @@ public class perteneceServiceImp implements perteneceService {
         
         perteneceModel savedPertenece = perteneceDao.save(pertenece);
         
-        perteneceResponseDTO response = new perteneceResponseDTO();
+        /*perteneceResponseDTO response = new perteneceResponseDTO();
         response.setIdPertenece(savedPertenece.getIdPertenece());
         response.setCif(savedPertenece.getCif());
         response.setIdEquipo(equipo.getIdequipo());
@@ -64,46 +103,11 @@ public class perteneceServiceImp implements perteneceService {
         response.setFechaDel(savedPertenece.getFechaDel());
         response.setEstado(savedPertenece.getEstado());
         
-        return response;
+        return response;*/
+        
+        return createPerteneceResponseDTO(savedPertenece);
     }
     
-    /*@Override
-    @Transactional
-    public perteneceResponseDTO updatePertenece(Long id, perteneceRequestDTO perteneceRequestDTO) {
-
-        perteneceModel pertenece = perteneceDao.findById(id)
-                .orElseThrow(() -> new RuntimeException("Asignación no encontrada"));
-        
-        if (perteneceRequestDTO.getIdEquipo() != null) {
-            equipoModel equipo = equipoDao.findById(perteneceRequestDTO.getIdEquipo())
-                    .orElseThrow(() -> new RuntimeException("Equipo no encontrado"));
-            pertenece.setEquipo(equipo);
-        }
-        
-        if (perteneceRequestDTO.getCif() != null) {
-            pertenece.setCif(perteneceRequestDTO.getCif());
-        }
-        
-        if (perteneceRequestDTO.getFechaAdd() != null) {
-            pertenece.setFechaAdd(perteneceRequestDTO.getFechaAdd());
-        }
-        
-        if (perteneceRequestDTO.getFechaDel() != null) {
-        	pertenece.setFechaDel(perteneceRequestDTO.getFechaDel());
-        }
-        
-        if (perteneceRequestDTO.getEstado() != null) {
-            pertenece.setEstado(perteneceRequestDTO.getEstado());
-        }
-        
-        perteneceModel updatedPertenece = perteneceDao.save(pertenece);
-        
-        perteneceResponseDTO response = modelMapper.map(updatedPertenece, perteneceResponseDTO.class);
-        response.setIdEquipo(updatedPertenece.getEquipo().getIdequipo());
-        response.setCodigoEquipo(updatedPertenece.getEquipo().getCodigo());
-        
-        return response;
-    }*/
     
     @Override
     @Transactional
@@ -136,7 +140,7 @@ public class perteneceServiceImp implements perteneceService {
         
         perteneceModel updatedPertenece = perteneceDao.save(pertenece);
         
-        perteneceResponseDTO response = new perteneceResponseDTO();
+        /*perteneceResponseDTO response = new perteneceResponseDTO();
         response.setIdPertenece(updatedPertenece.getIdPertenece());
         response.setCif(updatedPertenece.getCif());
         response.setIdEquipo(updatedPertenece.getEquipo().getIdequipo());
@@ -145,7 +149,8 @@ public class perteneceServiceImp implements perteneceService {
         response.setFechaDel(updatedPertenece.getFechaDel());
         response.setEstado(updatedPertenece.getEstado());
         
-        return response;
+        return response;*/
+        return createPerteneceResponseDTO(updatedPertenece);
     }
     
     @Override
@@ -180,7 +185,7 @@ public class perteneceServiceImp implements perteneceService {
         
         perteneceModel updatedPertenece = perteneceDao.save(pertenece);
         
-        perteneceResponseDTO response = new perteneceResponseDTO();
+        /*perteneceResponseDTO response = new perteneceResponseDTO();
         response.setIdPertenece(updatedPertenece.getIdPertenece());
         response.setCif(updatedPertenece.getCif());
         response.setIdEquipo(equipo.getIdequipo());
@@ -189,7 +194,9 @@ public class perteneceServiceImp implements perteneceService {
         response.setFechaDel(updatedPertenece.getFechaDel());
         response.setEstado(updatedPertenece.getEstado());
         
-        return response;
+        return response;*/
+        
+        return createPerteneceResponseDTO(updatedPertenece);
     }
     
     @Override
@@ -198,11 +205,12 @@ public class perteneceServiceImp implements perteneceService {
         perteneceModel pertenece = perteneceDao.findById(id)
                 .orElseThrow(() -> new RuntimeException("Asignación no encontrada"));
         
-        perteneceResponseDTO response = modelMapper.map(pertenece, perteneceResponseDTO.class);
+        /*perteneceResponseDTO response = modelMapper.map(pertenece, perteneceResponseDTO.class);
         response.setIdEquipo(pertenece.getEquipo().getIdequipo());
         response.setCodigoEquipo(pertenece.getEquipo().getCodigo());
         
-        return response;
+        return response;*/
+        return createPerteneceResponseDTO(pertenece);
     }
     
     @Override
@@ -210,13 +218,16 @@ public class perteneceServiceImp implements perteneceService {
     public List<perteneceResponseDTO> getPerteneceByCif(Long cif) {
         List<perteneceModel> asignaciones = perteneceDao.findByCif(cif);
         
-        return asignaciones.stream()
+        /*return asignaciones.stream()
                 .map(pertenece -> {
                     perteneceResponseDTO dto = modelMapper.map(pertenece, perteneceResponseDTO.class);
                     dto.setIdEquipo(pertenece.getEquipo().getIdequipo());
                     dto.setCodigoEquipo(pertenece.getEquipo().getCodigo());
                     return dto;
                 })
+                .collect(Collectors.toList());*/
+        return asignaciones.stream()
+                .map(this::createPerteneceResponseDTO)
                 .collect(Collectors.toList());
     }
     
@@ -228,35 +239,17 @@ public class perteneceServiceImp implements perteneceService {
         
         List<perteneceModel> asignaciones = perteneceDao.findByEquipo(equipo);
         
-        return asignaciones.stream()
+        /*return asignaciones.stream()
                 .map(pertenece -> {
                     perteneceResponseDTO dto = modelMapper.map(pertenece, perteneceResponseDTO.class);
                     dto.setIdEquipo(equipo.getIdequipo());
                     dto.setCodigoEquipo(equipo.getCodigo());
                     return dto;
                 })
+                .collect(Collectors.toList());*/
+        return asignaciones.stream()
+                .map(this::createPerteneceResponseDTO)
                 .collect(Collectors.toList());
-    }
-    
-    @Override
-    @Transactional
-    public perteneceResponseDTO getPropietarioActual(Long idEquipo) {
-        equipoModel equipo = equipoDao.findById(idEquipo)
-                .orElseThrow(() -> new RuntimeException("Equipo no encontrado"));
-
-        List<perteneceModel> asignacionesActivas = perteneceDao.findByEquipoAndEstado(equipo, "activo");
-        
-        if (asignacionesActivas.isEmpty()) {
-            throw new RuntimeException("Este equipo no está asignado actualmente a ninguna persona");
-        }
-        
-        perteneceModel asignacionActiva = asignacionesActivas.get(0);
-        
-        perteneceResponseDTO response = modelMapper.map(asignacionActiva, perteneceResponseDTO.class);
-        response.setIdEquipo(equipo.getIdequipo());
-        response.setCodigoEquipo(equipo.getCodigo());
-        
-        return response;
     }
     
     @Override
@@ -274,7 +267,7 @@ public class perteneceServiceImp implements perteneceService {
             throw new RuntimeException("No se encontraron asignaciones para el equipo y CIF especificados");
         }
         
-        return asignaciones.stream()
+        /*return asignaciones.stream()
                 .map(pertenece -> {
                     perteneceResponseDTO dto = new perteneceResponseDTO();
                     dto.setIdPertenece(pertenece.getIdPertenece());
@@ -286,6 +279,40 @@ public class perteneceServiceImp implements perteneceService {
                     dto.setEstado(pertenece.getEstado());
                     return dto;
                 })
+                .collect(Collectors.toList());*/
+        return asignaciones.stream()
+                .map(this::createPerteneceResponseDTO)
+                .collect(Collectors.toList());
+    }
+    
+    @Override
+    @Transactional
+    public List<perteneceResponseDTO> getEquiposPorTipo(Long idTipo) {
+        // Verificar que el tipo existe
+    	if (!tipoDao.existsById(idTipo)) {
+            throw new RuntimeException("Tipo no encontrado");
+        }
+        
+        // Obtener todos los equipos de este tipo
+        List<equipoModel> equipos = equipoDao.findByTipoIdTipo(idTipo);
+        
+        if (equipos.isEmpty()) {
+            throw new RuntimeException("No se encontraron equipos para este tipo");
+        }
+        
+        // Obtener todas las asignaciones para estos equipos
+        List<perteneceModel> asignaciones = new ArrayList<>();
+        for (equipoModel equipo : equipos) {
+            List<perteneceModel> asignacionesEquipo = perteneceDao.findByEquipo(equipo);
+            asignaciones.addAll(asignacionesEquipo);
+        }
+        
+        if (asignaciones.isEmpty()) {
+            throw new RuntimeException("No se encontraron asignaciones para equipos de este tipo");
+        }
+        
+        return asignaciones.stream()
+                .map(this::createPerteneceResponseDTO)
                 .collect(Collectors.toList());
     }
 }

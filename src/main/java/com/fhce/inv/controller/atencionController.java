@@ -74,4 +74,56 @@ public class atencionController {
             return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         }
     }
+    
+    @GetMapping("/lista-atendidas")
+    public ResponseEntity<?> getListaAtendidas() {
+        try {
+            List<atencionDtoObjResponce> response = atencionService.getListaAtendidas();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("mensaje", "Error al obtener lista de atenciones atendidas");
+            error.put("error", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @GetMapping("/historial-equipo/{idEquipo}")
+    public ResponseEntity<?> getHistorialAtencionesPorEquipo(@PathVariable Long idEquipo) {
+        try {
+            List<atencionDtoObjResponce> response = atencionService.getHistorialAtencionesPorEquipo(idEquipo);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("mensaje", "Error al obtener historial de atenciones del equipo");
+            error.put("error", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/historial-cif/{cif}")
+    public ResponseEntity<?> getHistorialAtencionesPorCif(@PathVariable Long cif) {
+        try {
+            List<atencionDtoObjResponce> response = atencionService.getHistorialAtencionesPorCif(cif);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("mensaje", "Error al obtener historial de atenciones del CIF");
+            error.put("error", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/historial-completo")
+    public ResponseEntity<?> getHistorialCompleto() {
+        try {
+            List<atencionDtoObjResponce> response = atencionService.getHistorialCompleto();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("mensaje", "Error al obtener historial completo de atenciones");
+            error.put("error", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

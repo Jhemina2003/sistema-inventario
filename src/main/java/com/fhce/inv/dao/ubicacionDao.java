@@ -10,4 +10,6 @@ import com.fhce.inv.model.ubicacionModel;
 @Repository
 public interface ubicacionDao extends JpaRepository<ubicacionModel, Long> {
     List<ubicacionModel> findByEquipoAndEstado(equipoModel equipo, int estado);
+    
+    List<ubicacionModel> findByEquipoOrderByFechaDesc(equipoModel equipo);
 }

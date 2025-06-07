@@ -90,4 +90,29 @@ public class redController {
             return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    
+    @GetMapping("/getRedActiva/{idEquipo}")
+    public ResponseEntity<?> getRedActiva(@PathVariable Long idEquipo) {
+        try {
+            redResponseDTO response = redService.getRedActiva(idEquipo);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("mensaje", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+    }
+    
+    @GetMapping("/getHistorialRedes/{idEquipo}")
+    public ResponseEntity<?> getHistorialRedes(@PathVariable Long idEquipo) {
+        try {
+            List<redResponseDTO> response = redService.getHistorialRedes(idEquipo);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("mensaje", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

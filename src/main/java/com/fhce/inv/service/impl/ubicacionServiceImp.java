@@ -29,6 +29,55 @@ public class ubicacionServiceImp implements ubicacionService {
     @Override
     @Transactional
     public ubicacionResponseDTO addUbicacion(ubicacionRequestDTO ubicacionRequestDTO) {
+        if (ubicacionRequestDTO.getIdEquipo() == null) {
+            throw new RuntimeException("El ID del equipo es requerido");
+        }
+        
+        equipoModel equipo = equipoDao.findById(ubicacionRequestDTO.getIdEquipo())
+                .orElseThrow(() -> new RuntimeException("Equipo no encontrado"));
+
+        // PASO CRÍTICO: Desactivar todas las ubicaciones activas para este equipo
+        List<ubicacionModel> ubicacionesActivas = ubicacionDao.findByEquipoAndEstado(equipo, 1);
+        for (ubicacionModel ubicacionActiva : ubicacionesActivas) {
+            ubicacionActiva.setEstado(0); // Cambiar a inactivo
+            ubicacionDao.save(ubicacionActiva);
+        }
+
+        // Crear la nueva ubicación (activa)
+        ubicacionModel ubicacion = new ubicacionModel();
+        ubicacion.setEquipo(equipo);
+        ubicacion.setAmbiente(ubicacionRequestDTO.getAmbiente());
+        ubicacion.setLatitud(ubicacionRequestDTO.getLatitud());
+        ubicacion.setLongitud(ubicacionRequestDTO.getLongitud());
+        
+        if (ubicacionRequestDTO.getFecha() != null) {
+            ubicacion.setFecha(ubicacionRequestDTO.getFecha());
+        } else {
+            ubicacion.setFecha(LocalDate.now());
+        }
+        
+        // La nueva ubicación siempre es activa
+        ubicacion.setEstado(1);
+        
+        ubicacionModel savedUbicacion = ubicacionDao.save(ubicacion);
+        
+        // Crear la respuesta
+        ubicacionResponseDTO response = new ubicacionResponseDTO();
+        response.setIdUbicacion(savedUbicacion.getIdUbicacion());
+        response.setIdEquipo(equipo.getIdequipo());
+        response.setCodigoEquipo(equipo.getCodigo());
+        response.setAmbiente(savedUbicacion.getAmbiente());
+        response.setLatitud(savedUbicacion.getLatitud());
+        response.setLongitud(savedUbicacion.getLongitud());
+        response.setFecha(savedUbicacion.getFecha());
+        response.setEstado(savedUbicacion.getEstado());
+        
+        return response;
+    }
+
+    /*@Override
+    @Transactional
+    public ubicacionResponseDTO addUbicacion(ubicacionRequestDTO ubicacionRequestDTO) {
         equipoModel equipo = equipoDao.findById(ubicacionRequestDTO.getIdEquipo())
                 .orElseThrow(() -> new RuntimeException("Equipo no encontrado"));
 
@@ -47,7 +96,7 @@ public class ubicacionServiceImp implements ubicacionService {
         response.setCodigoEquipo(equipo.getCodigo());
         
         return response;
-    }
+    }*/
     
     @Override
     @Transactional
@@ -119,20 +168,90 @@ public class ubicacionServiceImp implements ubicacionService {
     
     @Override
     @Transactional
+    public ubicacionResponseDTO getUbicacionActiva(Long idEquipo) {
+        equipoModel equipo = equipoDao.findById(idEquipo)
+                .orElseThrow(() -> new RuntimeException("Equipo no encontrado"));
+
+        List<ubicacionModel> ubicacionesActivas = ubicacionDao.findByEquipoAndEstado(equipo, 1);
+
+        if (ubicacionesActivas.isEmpty()) {
+            throw new RuntimeException("No hay ubicación activa para este equipo");
+        }
+
+        ubicacionModel ubicacion = ubicacionesActivas.get(0);
+
+        ubicacionResponseDTO response = new ubicacionResponseDTO();
+        response.setIdUbicacion(ubicacion.getIdUbicacion());
+        response.setIdEquipo(equipo.getIdequipo());
+        response.setCodigoEquipo(equipo.getCodigo());
+        response.setAmbiente(ubicacion.getAmbiente());
+        response.setLatitud(ubicacion.getLatitud());
+        response.setLongitud(ubicacion.getLongitud());
+        response.setFecha(ubicacion.getFecha());
+        response.setEstado(ubicacion.getEstado());
+
+        return response;
+    }
+    
+    @Override
+    @Transactional
+    public List<ubicacionResponseDTO> getHistorialUbicaciones(Long idEquipo) {
+        equipoModel equipo = equipoDao.findById(idEquipo)
+                .orElseThrow(() -> new RuntimeException("Equipo no encontrado"));
+
+        // Obtener TODAS las ubicaciones (activas e inactivas) ordenadas por fecha
+        List<ubicacionModel> ubicaciones = ubicacionDao.findByEquipoOrderByFechaDesc(equipo);
+
+        return ubicaciones.stream()
+                .map(ubicacion -> {
+                    ubicacionResponseDTO dto = new ubicacionResponseDTO();
+                    dto.setIdUbicacion(ubicacion.getIdUbicacion());
+                    dto.setIdEquipo(equipo.getIdequipo());
+                    dto.setCodigoEquipo(equipo.getCodigo());
+                    dto.setAmbiente(ubicacion.getAmbiente());
+                    dto.setLatitud(ubicacion.getLatitud());
+                    dto.setLongitud(ubicacion.getLongitud());
+                    dto.setFecha(ubicacion.getFecha());
+                    dto.setEstado(ubicacion.getEstado());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+    
+    @Override
+    @Transactional
     public ubicacionResponseDTO cambiarEstadoUbicacion(Long id, int estado) {
         if (estado != 1 && estado != 0) {
-        	throw new RuntimeException("Estado no válido. Use 1 para activo, 0 para inactivo");
+            throw new RuntimeException("Estado no válido. Use 1 para activo, 0 para inactivo");
         }
+
         ubicacionModel ubicacion = ubicacionDao.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ubicación no encontrada"));
+
+        // Si se va a activar esta ubicación, desactivar las otras del mismo equipo
+        if (estado == 1) {
+            List<ubicacionModel> ubicacionesActivas = ubicacionDao.findByEquipoAndEstado(ubicacion.getEquipo(), 1);
+            for (ubicacionModel ubicacionActiva : ubicacionesActivas) {
+                if (!ubicacionActiva.getIdUbicacion().equals(id)) {
+                    ubicacionActiva.setEstado(0);
+                    ubicacionDao.save(ubicacionActiva);
+                }
+            }
+        }
+
         ubicacion.setEstado(estado);
-        
         ubicacionModel updatedUbicacion = ubicacionDao.save(ubicacion);
-        
-        ubicacionResponseDTO response = modelMapper.map(updatedUbicacion, ubicacionResponseDTO.class);
+
+        ubicacionResponseDTO response = new ubicacionResponseDTO();
+        response.setIdUbicacion(updatedUbicacion.getIdUbicacion());
         response.setIdEquipo(updatedUbicacion.getEquipo().getIdequipo());
         response.setCodigoEquipo(updatedUbicacion.getEquipo().getCodigo());
-        
+        response.setAmbiente(updatedUbicacion.getAmbiente());
+        response.setLatitud(updatedUbicacion.getLatitud());
+        response.setLongitud(updatedUbicacion.getLongitud());
+        response.setFecha(updatedUbicacion.getFecha());
+        response.setEstado(updatedUbicacion.getEstado());
+
         return response;
     }
 }

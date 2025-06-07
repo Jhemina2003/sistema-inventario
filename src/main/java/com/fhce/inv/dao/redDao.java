@@ -11,4 +11,7 @@ import com.fhce.inv.model.redModel;
 public interface redDao extends JpaRepository<redModel, Long> {
     boolean existsByPuerto(String puerto);
     List<redModel> findByEquipoAndEstado(equipoModel equipo, int estado);
+    
+    List<redModel> findByPuertoAndEstado(String puerto, int estado);
+    List<redModel> findByEquipoOrderByFecharegistroDesc(equipoModel equipo);
 }

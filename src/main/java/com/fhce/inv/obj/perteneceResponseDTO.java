@@ -17,4 +17,11 @@ public class perteneceResponseDTO {
     private LocalDate fechaAdd;
     private LocalDate fechaDel;
     private String estado;
+    
+    private Long idTipo;
+    private String tipoNombre;
+    private String tipoSigla;
+    private String equipoDetalle;
+    private String equipoMarca;
+    private String equipoModelo;
 }

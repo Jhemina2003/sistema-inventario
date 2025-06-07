@@ -49,32 +49,6 @@ public class equipoController {
         }
     }
     
-    /*@PostMapping("/addEquipoCpu")
-    public ResponseEntity<?> addCpu(@RequestBody equipoCpuCompletoRequestDTO request) {
-        try {
-            // Para equipoCpuRequestDTO, siempre asumimos que el tipo es 1 (CPU)
-            if (request.getEquipoRequestDTO() != null) {
-                request.getEquipoRequestDTO().setIdTipo(1L);
-            }
-            
-            equipoResponseDTO response = equipoService.addCpu(
-                request.getEquipoRequestDTO(), 
-                request.getComponentePcRequestDTO(),
-                request.getPerteneceRequestDTO(),
-                request.getRedRequestDTO(),
-                request.getUbicacionRequestDTO(),
-                request.getSoftwareRequestDTO()
-            );
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("mensaje", "Error al crear equipo CPU");
-            errorResponse.put("error", e.getMessage());
-            
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }*/
-    
     @GetMapping("/getEquipotipo/{idTipo}")
     public ResponseEntity<List<equipoResponseDTO>> getEquipoTipo(@PathVariable Long idTipo) {
         try {
@@ -95,6 +69,20 @@ public class equipoController {
         } catch (Exception e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("mensaje", "Error al actualizar equipo");
+            errorResponse.put("error", e.getMessage());
+            
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @GetMapping("/getTodoEquipo")
+    public ResponseEntity<?> getAllEquipos() {
+        try {
+            List<equipoResponseDTO> response = equipoService.getAllEquipos();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("mensaje", "Error al obtener la lista de equipos");
             errorResponse.put("error", e.getMessage());
             
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);

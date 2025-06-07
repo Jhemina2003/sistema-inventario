@@ -11,4 +11,7 @@ public interface redService {
     redResponseDTO getRed(Long id);
     List<redResponseDTO> getRedPorEquipo(Long idEquipo);
     redResponseDTO cambiarEstadoRed(Long id, int estado);
+    
+    List<redResponseDTO> getHistorialRedes(Long idEquipo);
+    redResponseDTO getRedActiva(Long idEquipo);
 }

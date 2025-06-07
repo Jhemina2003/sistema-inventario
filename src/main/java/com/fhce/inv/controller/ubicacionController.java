@@ -77,6 +77,30 @@ public class ubicacionController {
         }
     }
     
+    @GetMapping("/getUbicacionActiva/{idEquipo}")
+    public ResponseEntity<?> getUbicacionActiva(@PathVariable Long idEquipo) {
+        try {
+            ubicacionResponseDTO response = ubicacionService.getUbicacionActiva(idEquipo);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("mensaje", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/getHistorialUbicaciones/{idEquipo}")
+    public ResponseEntity<?> getHistorialUbicaciones(@PathVariable Long idEquipo) {
+        try {
+            List<ubicacionResponseDTO> response = ubicacionService.getHistorialUbicaciones(idEquipo);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("mensaje", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PutMapping("/cambiarEstadoUbicacion/{id}/{estado}")
     public ResponseEntity<?> cambiarEstadoUbicacion(
             @PathVariable Long id,

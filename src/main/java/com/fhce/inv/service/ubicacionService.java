@@ -10,5 +10,8 @@ public interface ubicacionService {
     ubicacionResponseDTO updateUbicacion(Long id, ubicacionRequestDTO ubicacionRequestDTO);
     ubicacionResponseDTO getUbicacion(Long id);
     List<ubicacionResponseDTO> getUbicacionesPorEquipo(Long idEquipo);
+    
+    ubicacionResponseDTO getUbicacionActiva(Long idEquipo);
+    List<ubicacionResponseDTO> getHistorialUbicaciones(Long idEquipo);
     ubicacionResponseDTO cambiarEstadoUbicacion(Long id, int estado);
 }

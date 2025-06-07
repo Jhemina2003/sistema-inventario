@@ -97,10 +97,13 @@ public class perteneceController {
         }
     }
     
-    @GetMapping("/getPropietarioActual/{idEquipo}")
-    public ResponseEntity<?> getPropietarioActual(@PathVariable Long idEquipo) {
+    
+    @GetMapping("/getPertenecePorEquipoYCif/{idEquipo}/{cif}")
+    public ResponseEntity<?> getPertenecePorEquipoYCif(
+            @PathVariable Long idEquipo,
+            @PathVariable Long cif) {
         try {
-            perteneceResponseDTO response = perteneceService.getPropietarioActual(idEquipo);
+            List<perteneceResponseDTO> response = perteneceService.getPertenecePorEquipoYCif(idEquipo, cif);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
@@ -109,12 +112,10 @@ public class perteneceController {
         }
     }
     
-    @GetMapping("/getPertenecePorEquipoYCif/{idEquipo}/{cif}")
-    public ResponseEntity<?> getPertenecePorEquipoYCif(
-            @PathVariable Long idEquipo,
-            @PathVariable Long cif) {
+    @GetMapping("/getEquiposPorTipo/{idTipo}")
+    public ResponseEntity<?> getEquiposPorTipo(@PathVariable Long idTipo) {
         try {
-            List<perteneceResponseDTO> response = perteneceService.getPertenecePorEquipoYCif(idEquipo, cif);
+            List<perteneceResponseDTO> response = perteneceService.getEquiposPorTipo(idTipo);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
